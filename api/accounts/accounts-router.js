@@ -1,10 +1,6 @@
 const router = require('express').Router()
 const Accounts = require('./accounts-model.js')
-const {
-  checkAccountId,
-  checkAccountNameUnique,
-  checkAccountPayload
-} = require('./accounts-middleware.js')
+const md = require('./accounts-middleware.js')
 
 
 router.get('/', (req, res, next) => {
@@ -16,7 +12,7 @@ router.get('/', (req, res, next) => {
     .catch(next)
 })
 
-router.get('/:id', checkAccountId, (req, res, next) => {
+router.get('/:id', md.checkAccountId, (req, res, next) => {
   Accounts.getById(req.params.id)
     .then(account => {
       res.json(account)
@@ -24,15 +20,17 @@ router.get('/:id', checkAccountId, (req, res, next) => {
     .catch(next)
 })
 
-router.post('/', checkAccountPayload, checkAccountNameUnique, (req, res, next) => {
-  Accounts.create(req.body)
-    .then(newAccount => {
-      return res.status(201).json(newAccount)
-    })
-    .catch(next)
+router.post('/', md.checkAccountPayload, md.checkAccountNameUnique, async (req, res, next) => {
+  try {
+    const newAccount = await Accounts.create(req.body)
+    res.status(201).json(newAccount)
+    console.log(newAccount)
+  } catch (err) {
+    next(err)
+  }
 })
 
-router.put('/:id', checkAccountId, checkAccountPayload, (req, res, next) => {
+router.put('/:id', md.checkAccountId, md.checkAccountPayload, (req, res, next) => {
   Accounts.updateById(req.params.id, req.body)
     .then(() => {
       return Accounts.getById(req.params.id)
@@ -43,7 +41,7 @@ router.put('/:id', checkAccountId, checkAccountPayload, (req, res, next) => {
     .catch(next)
 });
 
-router.delete('/:id', checkAccountId, (req, res, next) => {
+router.delete('/:id', md.checkAccountId, (req, res, next) => {
   Accounts.deleteById(req.params.id)
     .then(() => {
       res.json(req.account)
