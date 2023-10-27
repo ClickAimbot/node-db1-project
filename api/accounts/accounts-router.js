@@ -24,7 +24,7 @@ router.get('/:id', checkAccountId, (req, res, next) => {
     .catch(next)
 })
 
-router.post('/', checkAccountNameUnique, checkAccountPayload, (req, res, next) => {
+router.post('/', checkAccountPayload, checkAccountNameUnique, (req, res, next) => {
   Accounts.create(req.body)
     .then(newAccount => {
       return res.status(201).json(newAccount)
@@ -32,16 +32,29 @@ router.post('/', checkAccountNameUnique, checkAccountPayload, (req, res, next) =
     .catch(next)
 })
 
-router.put('/:id', (req, res, next) => {
-  // DO YOUR MAGIC
+router.put('/:id', checkAccountId, checkAccountPayload, (req, res, next) => {
+  Accounts.updateById(req.params.id, req.body)
+    .then(() => {
+      return Accounts.getById(req.params.id)
+    })
+    .then(account => {
+      res.json(account)
+    })
+    .catch(next)
 });
 
-router.delete('/:id', (req, res, next) => {
-  // DO YOUR MAGIC
+router.delete('/:id', checkAccountId, (req, res, next) => {
+  Accounts.deleteById(req.params.id)
+    .then(() => {
+      res.json(req.account)
+    })
+    .catch(next)
 })
 
 router.use((err, req, res, next) => { // eslint-disable-line
-  // DO YOUR MAGIC
+  res.status(err.status || 500).json({
+    message: err.message
+  })
 })
 
 module.exports = router;
