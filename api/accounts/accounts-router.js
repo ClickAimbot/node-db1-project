@@ -16,12 +16,20 @@ router.get('/', (req, res, next) => {
     .catch(next)
 })
 
-router.get('/:id', (req, res, next) => {
-  // DO YOUR MAGIC
+router.get('/:id', checkAccountId, (req, res, next) => {
+  Accounts.getById(req.params.id)
+    .then(account => {
+      res.json(account)
+    })
+    .catch(next)
 })
 
-router.post('/', (req, res, next) => {
-  // DO YOUR MAGIC
+router.post('/', checkAccountNameUnique, checkAccountPayload, (req, res, next) => {
+  Accounts.create(req.body)
+    .then(newAccount => {
+      return res.status(201).json(newAccount)
+    })
+    .catch(next)
 })
 
 router.put('/:id', (req, res, next) => {

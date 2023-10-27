@@ -6,11 +6,13 @@ async function getAll() {
 }
 
 const getById = id => {
-  // DO YOUR MAGIC
+  const result = db('accounts').where('id', id).first()
+  return result
 }
 
 const create = account => {
-  // DO YOUR MAGIC
+  const result = db('accounts').insert(account)
+  return result
 }
 
 const updateById = (id, account) => {
