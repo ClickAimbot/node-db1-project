@@ -8,7 +8,12 @@ const {
 
 
 router.get('/', (req, res, next) => {
-   res
+  Accounts.getAll()
+    .then(accounts => {
+      res.json(accounts)
+      console.log(accounts)
+    })
+    .catch(next)
 })
 
 router.get('/:id', (req, res, next) => {
